@@ -1,0 +1,4 @@
+interface:
+  display_name: "照片局部艺术转译"
+  short_description: "按底片、区域与艺术表达三步规划，随机或未指定效果时自动搭配四张独立成片"
+  default_prompt: "使用 $photo-art-remix 处理这张照片，先规划各版底片、区域的位置形状与保护区，再选择适配画法完成局部艺术转译；未指定效果时自动搭配四张独立成片。"
