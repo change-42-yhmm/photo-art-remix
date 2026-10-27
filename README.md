@@ -1,38 +1,39 @@
-# Photo Art Remix · 照片局部艺术转译
+# Photo Art Remix
 
-保留摄影的真实感，让其中一块区域变成有形状、有主次的手绘或其他艺术表达。
+Keep the realism of a photograph while turning a deliberately shaped region into illustration.
 
-这是一个可复用的 **AI 图片编辑工作流 Skill**，包含三步处理规则、区域规划、画风搭配和成片检查。它不是独立修图软件，不包含模型、API 服务或自动修图程序；运行时需要所在 AI 平台具备图片理解与编辑能力。
+Photo Art Remix is a reusable **AI image-editing workflow skill** for photo grading, region planning, artistic treatment, and visual review. It requires an AI platform with image understanding and editing capabilities; it does not include an image model, API service, or standalone photo editor.
 
-![黑白摄影与局部手绘弧带融合示例](examples/portrait-ribbon.png)
+<img src="examples/portrait-ribbon.png" alt="Black-and-white photography with a hand-drawn ribbon" width="420">
 
-## 怎么处理一张照片
+## The three-step workflow
 
-| 步骤 | 做什么 | 可选形式 |
+| Step | Purpose | Available approaches |
 | --- | --- | --- |
-| ① 底片处理 | 调整明暗、色彩与材质层次，使底片独立观看也舒服 | 柔和黑白、清晰灰阶、高调／低调黑白、暖灰、冷灰、低饱和弱彩、保留原彩 |
-| ② 艺术区域 | 先确定位置、形状、走向、覆盖范围和保护区，再生成 | 条带、弧形／波浪带、宽笔刷、干刷带、不规则块面、撕纸块、圆形／椭圆窗口、几何切片、物体轮廓 |
-| ③ 艺术表达 | 将选区内原物转为相应媒介，加入少量相关陪衬并保留焦点 | 各类手绘线描、连续线、结构线、涂鸦、平涂、拼贴、水彩、版画、油画 |
+| 1. Grade the photograph | Build comfortable tonal relationships and preserve recognizable materials | Soft monochrome, clear grayscale, high-key or low-key black and white, warm or cool gray, muted color, original color |
+| 2. Plan the art region | Define its position, shape, direction, coverage, and protected areas before generating | Straight or diagonal bands, curved ribbons, broad brush strokes, dry-brush bands, irregular or torn-paper shapes, circular or elliptical windows, geometric slices, object silhouettes |
+| 3. Apply the artistic treatment | Translate content inside the region into the chosen medium, with restrained supporting elements | Hand-drawn outlines, continuous lines, structural linework, doodles, flat illustration, collage, watercolor, printmaking, oil-paint effects |
 
-区域必须有可辨认的内部面积，不能只是给原物描边或保留局部颜色。新增元素和配色应呼应照片，避免复制主体填满区域或抢走原焦点。
+The region needs a readable interior, rather than just an outline or selective color. Added elements should relate to the photograph without multiplying the subject or competing with its original focal point.
 
-## 快速使用
+## Quick start
 
-### 在支持附件或项目文件的 AI 聊天中
+### In an AI chat or project
 
-1. 上传 [photo-art-remix-universal.md](photo-art-remix-universal.md)，让 AI 读取完整规则。
-2. 上传要处理的原片；如有风格参考，注明它是参考图。
-3. 发送具体要求，例如：
+1. Attach [photo-art-remix-universal.md](photo-art-remix-universal.md) and ask the AI to read the complete workflow.
+2. Upload the photograph you want to edit. Label additional images as style references.
+3. Describe your request, for example:
 
 ```text
-按这份规则处理这张照片，随机搭配效果，输出多张独立图片。
+Use the attached workflow to edit this photo. Choose several suitable combinations
+and generate each result as a separate image.
 ```
 
-希望以后少传文件，可以把规则作为项目的共享文件，并将 [project-instructions.txt](project-instructions.txt) 中的文字放进项目说明。是否支持长期保存文件和图片编辑，取决于所在平台。
+For repeated use, add the workflow to your project's shared files and copy [project-instructions.txt](project-instructions.txt) into its instructions. Shared-file support and image-editing features depend on the platform. The workflow files are currently written in Chinese; this README and its example requests are in English.
 
-### 在支持 Skill 目录的 AI 工具中
+### In a tool that supports skill folders
 
-将仓库中的 [photo-art-remix](photo-art-remix) 文件夹复制到该工具支持的自定义技能目录，保留下面的结构：
+Copy the [photo-art-remix](photo-art-remix) folder into the custom skill location supported by your tool. Preserve its structure:
 
 ```text
 photo-art-remix/
@@ -44,85 +45,115 @@ photo-art-remix/
     └── styles.md
 ```
 
-[SKILL.md](photo-art-remix/SKILL.md) 是入口，两个参考文件按需读取。`agents/openai.yaml` 是部分工具使用的可选界面元数据，不是执行三步规则的前提。平台不支持技能目录时，使用单文件版即可。
+[SKILL.md](photo-art-remix/SKILL.md) is the entry point. Supporting references are loaded as needed. `agents/openai.yaml` provides optional interface metadata for compatible tools; it is not required to follow the workflow. Use the single-file edition when skill folders are unsupported.
 
-## 数量与自动搭配
+## Output count and variations
 
-| 用户说法 | 预期行为 |
+| Request | Expected behavior |
 | --- | --- |
-| “处理这张”或“随机效果” | 默认策划 4 个适合照片的版本，逐张生成独立图片 |
-| “随机一张”或“随机两张” | 按明确数量生成 |
-| “水彩风格，全部黑白” | 锁定水彩与黑白，自动选择其余手法；未指定数量时默认 1 张 |
-| “多张，全部黑白” | 4 张黑白版本，在区域和艺术表达上变化 |
-| “把这一张调淡些” | 仅修改指定结果，不自动扩成 4 张 |
-| “按经典默认效果” | 柔和黑白＋依构图选择成形区域＋手绘线条与有限色面，默认 1 张 |
-| “按原四组生成” | 黑白／原彩 × 弧带／物体轮廓的四种组合 |
+| "Process this photo" or "Random effects" | Plan four suitable variations and generate four separate images |
+| "One random version" or "Two random versions" | Use the requested count |
+| "Watercolor, all black and white" | Keep those choices fixed and select the remaining techniques; one image unless a count is requested |
+| "Several versions, all black and white" | Four monochrome versions with different regions or artistic treatments |
+| "Make this result lighter" | Edit that result without automatically expanding it into four versions |
+| "Use the classic default" | Soft monochrome, a region selected for the composition, and hand-drawn lines with limited color fields; one image |
+| "Use the original four combinations" | Monochrome/original color crossed with curved ribbon/object silhouette |
 
-自动搭配不是无约束重绘：每张都要先规划区域和保护项，再筛选相容的底片、画法、配色和少量相关元素。差异不应只是给同一构图换色。用户明确的数量、效果和保留要求优先。
+Automatic variation still requires region planning and subject protection. Choose compatible grading, geometry, medium, palette, and supporting elements instead of simply recoloring the same composition. Explicit user choices take priority.
 
-**多张默认分别生成、分别交付，不是四宫格。** 如果平台无法完成全部图片，应说明实际完成数量；只有明确要求拼图时才合并。
+**Multiple results are separate images, not a four-panel collage.** If the platform cannot finish every image, it should report the actual count. Combine images only when the user requests a comparison board or collage.
 
-## 效果示例
+## Examples
 
-以下是已有处理结果，用于展示不同表现方向，并非当前规则在所有平台的稳定性测试。输出会受原片、提示执行和模型能力影响。
+These existing results illustrate different directions; they are not a cross-platform reliability benchmark for the current rules. Results depend on the source photo, instruction following, and the image model. Images retain their original aspect ratios; different source compositions are not cropped to match.
 
-### 服饰与花枝：黑白底片、手绘弧带
+### Fashion and flowers: monochrome with a hand-drawn ribbon
 
-| 原片 | 艺术化结果 |
-| --- | --- |
-| ![服饰与花枝原片](examples/portrait-original.png) | ![局部手绘弧带结果](examples/portrait-ribbon.png) |
+<table>
+  <tr><th>Original</th><th>Artistic result</th></tr>
+  <tr>
+    <td width="50%" valign="top"><img src="examples/portrait-original.png" alt="Original fashion photograph with flowers" width="360"></td>
+    <td width="50%" valign="top"><img src="examples/portrait-ribbon.png" alt="Fashion photograph with a hand-drawn ribbon" width="360"></td>
+  </tr>
+</table>
 
-### 鞋履：保留主体色彩、局部海洋表达
+### Footwear: an ocean-inspired art region
 
-| 原片 | 艺术化结果 |
-| --- | --- |
-| ![红色鞋履原片](examples/shoes-original.png) | ![鞋履周围的海洋艺术区域](examples/shoes-ocean.png) |
+<table>
+  <tr><th>Original</th><th>Artistic result</th></tr>
+  <tr>
+    <td width="50%" valign="top"><img src="examples/shoes-original.png" alt="Original photograph of red shoes" width="360"></td>
+    <td width="50%" valign="top"><img src="examples/shoes-ocean.png" alt="Red shoes surrounded by a painted ocean scene" width="360"></td>
+  </tr>
+</table>
+
+### Street scene: an autumn ribbon around a classic car
+
+<table>
+  <tr><th>Original</th><th>Artistic result</th></tr>
+  <tr>
+    <td width="50%" valign="top"><img src="examples/street-original.png" alt="Original street photograph with a classic car" width="360"></td>
+    <td width="50%" valign="top"><img src="examples/street-autumn.png" alt="Classic car with an autumn-colored illustrated ribbon" width="360"></td>
+  </tr>
+</table>
+
+### Train interior: twilight mountains and illustrated window details
+
+<table>
+  <tr><th>Original</th><th>Artistic result</th></tr>
+  <tr>
+    <td width="50%" valign="top"><img src="examples/train-original.png" alt="Original train interior in warm evening light" width="360"></td>
+    <td width="50%" valign="top"><img src="examples/train-twilight.png" alt="Train interior with twilight mountain illustrations" width="360"></td>
+  </tr>
+</table>
 
 <details>
-<summary>展开查看历史版本的表现形式对比</summary>
+<summary>View an earlier comparison of treatment styles</summary>
 
-![黑白与原彩、弧带与轮廓的历史对比图](examples/portrait-variants.png)
+![Earlier monochrome/color and ribbon/silhouette comparison](examples/portrait-variants.png)
 
-这张对比板来自历史示例，用于比较表现形式。当前工作流的多版本输出要求仍是独立图片，不以这张对比板作为交付格式。
+This historical comparison board illustrates different treatments. It does not change the current requirement to deliver multiple versions as separate images.
 
 </details>
 
-## 可以怎么调整
+## Example adjustments
 
 ```text
-只生成一张，保留原彩，艺术区域用弧形条带。
+Generate only one image. Keep the original colors and use a curved ribbon.
 ```
 
 ```text
-随机两张，区域避开面部，元素更少，线条更轻。
+Generate two random versions. Protect the face, use fewer supporting elements,
+and keep the linework light.
 ```
 
 ```text
-保持当前底片和区域，只把带内画法换成水彩。
+Keep the current grading and region. Change only the treatment inside it to watercolor.
 ```
 
 ```text
-保留原焦点，减少重复主体，加入少量相关纹理，不要新增人物。
+Preserve the original focal point. Reduce repeated subjects and add a little related
+texture. Do not add people.
 ```
 
-## 文件与隐私
+## Files and privacy
 
-- 规则文件不绑定模型、工具名、操作系统、本机目录或凭据；区域规划不代表平台具备精确蒙版能力。
-- 示例使用中性文件名，发布副本已移除 EXIF 和其他图片附加元数据，像素内容保持不变。
-- 仓库只包含发布用规则、项目说明和精选示例，不包含个人聊天记录、调试提示、历史备份、本机路径或账号凭据。
-- 使用者自己的原片只在所选 AI 平台的实际处理流程中提供；本仓库不包含上传服务或遥测程序。
+- The workflow does not require a specific model, tool name, operating system, local directory, or credential. Region planning does not imply precise masking support.
+- Published examples use neutral filenames and contain no EXIF or other embedded image metadata. Their pixel content is unchanged.
+- The repository includes rules, project instructions, and selected examples. It excludes personal chat transcripts, debug prompts, historical backups, local paths, and credentials.
+- This repository contains no upload service or telemetry code. Your source images are supplied through the AI platform you choose.
 
-生成式编辑可能改变局部细节，无法保证区域外逐像素不变。请查看实际成片，检查主体辨识度、区域规划、焦点、画法和图片数量。
+Generative editing can alter details outside the intended region. Review the actual result for subject identity, region shape, focal hierarchy, medium, and image count; pixel-perfect preservation is not guaranteed.
 
-## 目录
+## Repository layout
 
 ```text
 .
 ├── README.md
-├── photo-art-remix/             # 标准 Skill 目录
-├── photo-art-remix-universal.md # 可上传到 AI 聊天的完整单文件规则
-├── project-instructions.txt    # 可复制的项目说明
-└── examples/                   # 精选原片与效果展示
+├── photo-art-remix/             # Standard skill folder
+├── photo-art-remix-universal.md # Complete single-file workflow for AI chats
+├── project-instructions.txt    # Reusable project instructions
+└── examples/                   # Original photographs and artistic results
 ```
 
-提交改进建议时，请提供问题描述、期望效果及适合分享的示例，避免附带账号凭据或私人聊天内容。
+When suggesting an improvement, include the issue, the intended result, and an example suitable for sharing. Do not include credentials or private chat content.
